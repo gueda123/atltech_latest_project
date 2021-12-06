@@ -1,0 +1,200 @@
+{% extends 'boomboom_user/base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="customer-dashboard">
+
+
+{% if messages %}
+{% for message in messages %}
+<div style="height: 50px; background-color: #FFCD44; color: white;">
+    <h3>{{ message }}</h3>
+</div>
+
+{% endfor %}
+
+
+{% endif %}
+
+
+
+
+<div class="tab">
+  <button class="tablinks active" onclick="openCity(event, 'Paris')">My Orders</button>
+  <button class="tablinks" onclick="openCity(event, 'London')">Dashboard</button>
+  <button class="tablinks" onclick="openCity(event, 'Tokyo')">Edit Address</button>
+  <button class="tablinks" onclick="openCity(event, 'Dhaka')">Edit Account</button>
+  <button class="tablinks" onclick="openCity(event, 'Vancouver')">Logout</button>
+</div>
+
+<!-- Tab content -->
+
+
+<div id="Paris" class="tabcontent active"  style="display:block; overflow-x:auto;">
+  <h3>All Orders</h3>
+
+  <table class="tg" style="undefined;table-layout: fixed; width: 785px">
+  <colgroup>
+  <col style="width: 38px">
+  <col style="width: 81px">
+  <col style="width: 114px">
+  <col style="width: 144px">
+  <col style="width: 89px">
+  <col style="width: 89px">
+  <col style="width: 165px">
+  <col style="width: 161px">
+
+
+  </colgroup>
+  <thead>
+    <tr>
+      <th class="tg-baqh">Sl</th>
+      <th class="tg-c3ow">Order ID</th>
+      <th class="tg-c3ow">Date</th>
+      <th class="tg-c3ow">Campaign</th>
+      <th class="tg-c3ow">Status</th>
+      <th class="tg-c3ow">Total</th>
+      <th class="tg-c3ow" colspan="2">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% if filter_all_orders %}
+  {% for i in filter_all_orders %}
+    <tr>
+      <td class="tg-baqh">{{forloop.counter}}.</td>
+      <td class="tg-c3ow">{{i.Order_Id}}</td>
+      <td class="tg-c3ow">{{i.Order_Time}}</td>
+      <td class="tg-c3ow">{% if i.Order_Campaign %}{{i.Order_Campaign}}{% else %}Reguler Order{% endif %}</td>
+      <td class="tg-c3ow">{{i.Order_Status}}</td>
+      <td class="tg-c3ow">${{i.SubTotal_Price}}</td>
+
+      <td class="tg-c3ow" colspan="{% if i.Cancelled %}2{% elif i.Order_Status == "Pending payment" %}1{% else %}4{% endif %}"><a href="{% url 'customer_order_view' i.id %}"  rel="noopener noreferrer"><button type="button" class="btn-bbe-black" name="button">View</button></a></td>
+
+
+      {% if i.Cancelled %}
+
+
+      {% elif i.Order_Status == "Pending payment" %}
+
+      <td class="tg-c3ow">
+      <button type="button" class="btn-bbe-red" data-toggle="modal" data-target="#myModal1{{i.id}}">
+          Cancel
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="myModal1{{i.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1{{i.id}}">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+              </div>
+              <div class="modal-body">
+                Order ID : {{i.Order_Id}}<br>
+              Are you sure, you want to cancel this Order??
+
+              </div>
+              <div class="modal-footer">
+
+                <form action="{% url 'cancel_order' %}" method="POST">{% csrf_token %}
+                <button type="button" class="btn btn-default" data-dismiss="modal">NO</button>
+                <button type="submit" class="btn btn-primary" value="{{i.id}}" name="cancel_button">YES</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+      </td>
+
+
+      {% endif %}
+
+
+    </tr>
+  {% endfor %}
+  {% else %}
+  <tr>
+      <td class="tg-baqh" colspan="9">No Orders</td>
+
+    </tr>
+  {% endif %}
+
+  </tbody>
+  </table>
+
+  {% if filter_cus_Ordr_Table_3 %}
+  <h3>Old Orders</h3>
+
+  <table class="tg" style="undefined;table-layout: fixed; width: 785px">
+  <colgroup>
+  <col style="width: 38px">
+  <col style="width: 81px">
+  <col style="width: 114px">
+  <col style="width: 144px">
+  <col style="width: 89px">
+  <col style="width: 89px">
+  <col style="width: 65px">
+  <col style="width: 61px">
+  <col style="width: 102px">
+  <col style="width: 226px">
+  </colgroup>
+  <thead>
+    <tr>
+      <th class="tg-baqh">Sl</th>
+      <th class="tg-c3ow">Order ID</th>
+      <th class="tg-c3ow">Date</th>
+      <th class="tg-c3ow">Status</th>
+      <th class="tg-c3ow">SubTotal</th>
+      <th class="tg-c3ow">GrandTotal</th>
+      <th class="tg-c3ow">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+
+  {% for i in filter_cus_Ordr_Table_3 %}
+    <tr>
+      <td class="tg-baqh">{{forloop.counter}}.</td>
+      <td class="tg-c3ow">{{i.old_order_id}}</td>
+      <td class="tg-c3ow">{{i.old_order_date}}</td>
+      <td class="tg-c3ow">{{i.old_order_status}}</td>
+      <td class="tg-c3ow">${{i.old_Subtotal_Amount}}</td>
+      <td class="tg-c3ow">${{i.old_greand_total}}</td>
+      <td class="tg-c3ow"><a href="{% url 'old_customer_order_view' i.old_order_id %}" target="_blank" rel="noopener noreferrer">View</a></td>
+
+    </tr>
+  {% endfor %}
+
+
+
+  </tbody>
+  </table>
+{% endif %}
+
+
+
+</div>
+
+<div id="London" class="tabcontent">
+  <h3>Greetings Sohel</h3>
+  <p>This is your dashboard. Here you can see your <a href="#">your orders</a> edit your <a href="#">account</a> & <a href="#">address</a>. </p>
+</div>
+
+<div id="Tokyo" class="tabcontent">
+  <h3>Edit Your Address</h3>
+  <p>See current Application and give appropriate fields.</p>
+</div>
+
+<div id="Dhaka" class="tabcontent">
+  <h3>Edit Your Account</h3>
+  <p>See current Application and give appropriate fields.</p>
+</div>
+
+</div>
+
+
+
+
+{% endblock %}

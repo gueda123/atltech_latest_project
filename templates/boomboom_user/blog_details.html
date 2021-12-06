@@ -1,0 +1,120 @@
+{% extends 'boomboom_user/base.html' %}
+{% load static %}
+{% block content %}
+
+
+<div class="col-xs-12 col-sm-12 col-md-6 homebanner-holder">
+        <div class="breadcrumb">
+		<div class="breadcrumb-inner">
+			<ul class="list-inline list-unstyled">
+				<li><a href="{% url 'home' %}">Home</a></li>
+				<li class="active"><a href="{% url 'blogs' %}">Blog</a></li>
+			</ul>
+		</div><!-- /.breadcrumb-inner -->
+	</div><!-- /.container -->
+<div>
+
+<div class="blog-post sidebar-widget outer-bottom-xs wow fadeInUp" style="padding:4px;">
+	<h2 style="padding-bottom:15px; padding-left:15px;">{{get_blg.title}}</h2>
+	<a href="{% url 'blog_details' get_blg.id %}"><img class="img-responsive" src="/media/{{get_blg.img}}" alt="" style="max-height:400px; display:block;
+        margin-left: auto;
+        margin-right: auto;"></a>
+	<div style="padding:15px;">
+		<span class="date-time">{{get_blg.time}}</span> | <span class="review" style="color:#F69108;">{{get_blg.qty_comments}} Comments</span>
+		<br>
+		<p>{{get_blg.discription | safe }}</p>
+	</div>
+
+</div>
+
+
+<div class="blog-write-comment outer-bottom-xs outer-top-vs">
+	<div class="row">
+		<div class="col-md-12">
+			<h4>Leave A Comment</h4>
+		</div>
+		<form method="POST" action="{% url 'post_comment' %}">{% csrf_token %}
+			<div class="col-md-12">
+				<div class="form-group">
+				<label class="info-title" for="exampleInputComments">Your Comments <span>*</span></label>
+				<input type="hidden" name="get_blg_id" value="{{get_blg.id}}">
+				<textarea class="form-control unicase-form-control" id="exampleInputComments" name="comment_text"></textarea>
+			  </div>
+			</div>
+			<div class="col-md-12 outer-bottom-small m-t-20">
+				{% if request.user.is_authenticated %}
+				<button type="submit" class="btn-upper btn btn-primary checkout-page-button">Submit Comment</button>
+				{% else %}
+				<a href="{% url 'login_register' %}" class="btn-upper btn btn-primary checkout-page-button">Login</a>
+				<span style="padding-left:10px;">You Have to Login First !</span>
+				{% endif %}
+			</div>
+		</form>
+	</div>
+</div>
+
+		<div class="blog-review wow fadeInUp animated" style="visibility: visible;">
+			<div class="row">
+				<div class="col-md-12 col-xs-12">
+					<h3 class="title-review-comments">{{all_comments_count}} comments</h3>
+				</div>
+				{% if all_comments %}
+				{% for i in all_comments %}
+				<div class="col-md-2 col-sm-2" style="padding-top:8px;">
+					<img src="{% static 'images/user.png' %}" alt="Responsive image" class="img-rounded img-responsive" style="width:80%">
+				</div>
+				<div class="col-md-10 col-sm-10 blog-comments outer-bottom-xs">
+					<div class="blog-comments inner-bottom-xs">
+						<h4>{{i.User.username}} | <small>{{i.time}}</small></h4>
+						<p>{{ i.comment_text }}</p>
+					</div>
+				</div>
+				{% endfor %}
+				{% else %}
+				<span style="padding:15px;">No Comment To Show</span>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-xs-12 col-sm-12 col-md-3 sidebar right-sidebar">
+	<div class="sidebar-module-container" style="margin-top:45px;">
+		<div class="home-banner outer-top-n outer-bottom-xs">
+			<img src="{% static 'images/side_home_benner.jpg' %}" alt="Image">
+		</div>
+
+		<div class="sidebar-widget outer-bottom-xs wow fadeInUp">
+		<h3 class="section-title">Recent Post</h3>
+
+		<div class="tab-content" style="padding-left:0">
+		   <div class="tab-pane active m-t-20" id="popular">
+			   {% for i in all_blg5 %}
+				<div class="blog-post inner-bottom-30 ">
+					<a href="{% url 'blog_details' i.id %}"><img class="img-responsive" src="/media/{{i.img}}" alt="">
+						</a>
+					<h4><a href="{% url 'blog_details' i.id %}">{{i.title}}</a></h4>
+						<span class="review">{{i.qty_comments}} Comments</span><br>
+					<span class="date-time">{{i.time}}</span>
+				</div>
+			   {% endfor %}
+			</div>
+		</div>
+		</div>
+
+		<div class="home-banner outer-top-n outer-bottom-xs">
+			<img src="{% static 'images/t2.jpg' %}" alt="Image">
+		</div>
+
+		<div class="home-banner outer-top-n outer-bottom-xs">
+			<img src="{% static 'images/side_home_benner.jpg' %}" alt="Image">
+		</div>
+	</div>
+
+</div>
+
+
+
+
+
+{% endblock %}
